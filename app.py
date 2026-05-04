@@ -16,7 +16,7 @@ bone_data = {
     "Sternum": {"pos": (32, 50), "options": ["Sternum", "Ribs", "Clavicle", "Xiphoid"]},
     "Humerus": {"pos": (38, 32), "options": ["Humerus", "Radius", "Ulna", "Femur"]},
     "Pelvis": {"pos": (55, 50), "options": ["Pelvis", "Femur", "Sacrum", "Ilium"]},
-    "Femur": {"pos": (70, 42), "options": ["Femur", "Tibia", "Fibula", "Patella"]},
+    "Femur": {"pos": (50, 42), "options": ["Femur", "Tibia", "Fibula", "Patella"]},
     "Patella": {"pos": (78, 42), "options": ["Patella", "Femur", "Tibia", "Fibula"]},
     "Tibia": {"pos": (88, 40), "options": ["Tibia", "Fibula", "Tarsals", "Femur"]}
 }
