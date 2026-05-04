@@ -2,12 +2,12 @@ import streamlit as st
 import random
 import time
 from PIL import Image
+import os
 
-# 1. 페이지 설정
+# 1. Page Config
 st.set_page_config(page_title="Professional Anatomy Quiz", page_icon="💀", layout="centered")
 
-# 2. 뼈 데이터 (이미지 크기에 맞춰 좌표 조절 필요)
-# (y좌표, x좌표) 순서입니다.
+# 2. Bone Data
 bone_data = {
     "Skull (Cranium)": {"pos": (80, 250), "options": ["Skull", "Mandible", "Cervical", "Clavicle"]},
     "Mandible": {"pos": (130, 250), "options": ["Mandible", "Maxilla", "Hyoid", "Skull"]},
@@ -21,31 +21,42 @@ bone_data = {
     "Fibula": {"pos": (850, 240), "options": ["Fibula", "Tibia", "Talus", "Tarsals"]}
 }
 
-# 세션 상태 초기화
 if 'score' not in st.session_state: st.session_state.score = 0
 if 'quiz_count' not in st.session_state: st.session_state.quiz_count = 0
 if 'current_bone' not in st.session_state: st.session_state.current_bone = random.choice(list(bone_data.keys()))
 
 st.title("💀 AI Anatomy Diagnostic System")
-st.write("Professional Medical Quiz: Identify the highlighted bone.")
+st.write("Identify the bone highlighted by the red marker.")
 
-# 3. 이미지와 마커 표시
-try:
-    image = Image.open("skeleton.jpg")
+# 3. 이미지 표시 (주소 방식이 아닌 직접 파일 로드 방식)
+image_path = "skeleton.jpg"
+
+if os.path.exists(image_path):
     y, x = bone_data[st.session_state.current_bone]["pos"]
     
+    # 이미지를 열어서 화면에 표시
+    st.image(image_path, use_container_width=True)
+    
+    # 이미지 위에 빨간 점을 표시하기 위한 레이아웃 (HTML/CSS)
+    # st.image 바로 아래에 점을 띄우는 것이 어려울 수 있어, 
+    # 다시 한번 안정적인 HTML 렌더링 방식을 시도합니다. 
+    # 단, 이번에는 로컬 이미지 데이터를 직접 활용합니다.
+    import base64
+    with open(image_path, "rb") as f:
+        data = base64.b64encode(f.read()).decode("utf-8")
+    
     st.markdown(f"""
-        <div style="position: relative; width: 100%; max-width: 500px; margin: auto;">
-            <img src="https://raw.githubusercontent.com/{st.session_state.get('user_id', '본인아이디')}/bone-quiz/main/skeleton.jpg" style="width: 100%; border-radius: 10px; border: 2px solid #4a90e2;">
-            <div style="position: absolute; top: {y}px; left: {x}px; width: 22px; height: 22px; background-color: #ff4757; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px red; transform: translate(-50%, -50%); z-index: 10;"></div>
+        <div style="position: relative; width: 100%; max-width: 500px; margin: auto; margin-top: -550px;">
+            <div style="height: 500px;"></div> <!-- 이미지 높이만큼 공간 확보 -->
+            <div style="position: absolute; top: {y}px; left: {x}px; width: 22px; height: 22px; background-color: #ff4757; border-radius: 50%; border: 3px solid white; box-shadow: 0 0 15px red; transform: translate(-50%, -50%); z-index: 99;"></div>
         </div>
     """, unsafe_allow_html=True)
-except:
-    st.error("Please ensure 'skeleton.jpg' is uploaded to your GitHub repository.")
+else:
+    st.error(f"'{image_path}' 파일을 찾을 수 없습니다. GitHub에 사진을 올렸는지 확인해주세요.")
 
 st.markdown("---")
 
-# 4. 퀴즈 섹션 (영문 객관식)
+# 4. 퀴즈 섹션
 options = bone_data[st.session_state.current_bone]["options"]
 random.shuffle(options)
 
